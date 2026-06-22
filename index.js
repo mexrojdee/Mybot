@@ -1,6 +1,6 @@
 const { Telegraf } = require('telegraf');
 
-const bot = new Telegraf('8236967922:AAFZKnaeRFX5shEGLPacbHz4VTerC4R_-SY');
+const bot = new Telegraf(process.env.BOT_TOKEN);
 
 console.log("BOT ISHGA TUSHDI");
 
@@ -13,3 +13,10 @@ bot.on('text', (ctx) => {
 });
 
 bot.launch();
+
+const http = require('http');
+
+http.createServer((req, res) => {
+  res.writeHead(200);
+  res.end('Bot is alive!');
+}).listen(process.env.PORT || 3000);
