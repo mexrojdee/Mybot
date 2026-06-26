@@ -1,10 +1,30 @@
 const { Telegraf } = require('telegraf');
 const fs = require('fs');
 
+const CHANNEL = "@kinolar_uz_2";
+
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 // O'Z TELEGRAM ID'ingNI YOZ
 const ADMIN_ID = 8715755920;
+
+async function checkMember(ctx) {
+  try {
+    const member = await ctx.telegram.getChatMember(
+      CHANNEL,
+      ctx.from.id
+    );
+
+    if (member.status === "left" || member.status === "kicked") {
+      return false;
+    }
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 
 // kinolar.json bo'lmasa yaratadi
 if (!fs.existsSync('kinolar.json')) {
@@ -16,8 +36,14 @@ let kinolar = JSON.parse(fs.readFileSync('kinolar.json'));
 let kutyapti = false;
 let vaqtinchaVideo = null;
 
-bot.start((ctx) => {
-  ctx.reply("🎬 Kino botga xush kelibsiz!\nKino kodini yuboring.");
+bot.start(async (ctx) => {
+  const ok = await checkMember(ctx);
+
+  if (!ok) {
+    return ctx.reply("❗ Kanalga a’zo bo‘ling:\n" + CHANNEL);
+  }
+
+  ctx.reply("🎬 Kino botga xush kelibsiz!");
 });
 
 bot.command('addkino', (ctx) => {
@@ -92,3 +118,4 @@ bot.command('deletekino', (ctx) => {
 bot.launch();
 
 console.log("✅ Bot ishga tushdi.");
+
