@@ -31,10 +31,7 @@ bot.start(async (ctx) => {
   if (!ok) {
     return ctx.reply("❗ Avval kanalga a'zo bo'ling:\n" + CHANNEL);
   }
-  db.prepare(`
-INSERT OR IGNORE INTO users (user_id, full_name, username)
-VALUES (?, ?, ?)
-`).run(
+db.addUser(
   ctx.from.id,
   ctx.from.first_name || "",
   ctx.from.username || ""
@@ -76,12 +73,11 @@ bot.command("list", (ctx) => {
     return ctx.reply("⛔ Siz admin emassiz.");
   }
 
-  const result = db.prepare("SELECT COUNT(*) AS total FROM users").get();
+  const users = db.getUsers();
 
-  ctx.reply(
-    `📊 Bot statistikasi\n\n👥 Foydalanuvchilar: ${result.total} ta`
-  );
-});
+ctx.reply(
+  `📊 Bot statistikasi\n\n👥 Foydalanuvchilar: ${Object.keys(users).length} ta`
+);
 
 bot.command("broadcast", (ctx) => {
   if (ctx.from.id !== ADMIN_ID) {
