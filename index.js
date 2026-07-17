@@ -21,7 +21,7 @@ if (!fs.existsSync("kinolar.json")) {
 }
 
 let kinolar = JSON.parse(fs.readFileSync("kinolar.json"));
-
+let broadcastMode = false;
 let kutyapti = false;
 let vaqtinchaVideo = null;
 
@@ -81,6 +81,15 @@ bot.command("list", (ctx) => {
   ctx.reply(
     `📊 Bot statistikasi\n\n👥 Foydalanuvchilar: ${result.total} ta`
   );
+});
+
+bot.command("broadcast", (ctx) => {
+  if (ctx.from.id !== ADMIN_ID) {
+    return ctx.reply("⛔ Siz admin emassiz.");
+  }
+
+  broadcastMode = true;
+  ctx.reply("📢 Hammaga yuboriladigan xabarni yozing.");
 });
 
   bot.command("deletekino", (ctx) => {
