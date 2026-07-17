@@ -1,3 +1,4 @@
+const db = require("./database");
 const { Telegraf } = require('telegraf');
 const fs = require('fs');
 
@@ -30,7 +31,14 @@ bot.start(async (ctx) => {
   if (!ok) {
     return ctx.reply("❗ Avval kanalga a'zo bo'ling:\n" + CHANNEL);
   }
-
+  db.prepare(`
+INSERT OR IGNORE INTO users (user_id, full_name, username)
+VALUES (?, ?, ?)
+`).run(
+  ctx.from.id,
+  ctx.from.first_name || "",
+  ctx.from.username || ""
+);
   ctx.reply("🎬 Kino botga xush kelibsiz!");
 });
 
