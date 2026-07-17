@@ -59,6 +59,7 @@ bot.on("video", (ctx) => {
 });
 
 bot.command("list", (ctx) => {
+
   if (ctx.from.id != ADMIN_ID) return;
 
   const list = Object.keys(kinolar);
@@ -69,8 +70,20 @@ bot.command("list", (ctx) => {
 
   ctx.reply("🎬 Kinolar:\n\n" + list.join("\n"));
 });
+  
+  bot.command("stats", (ctx) => {
+  if (ctx.from.id !== ADMIN_ID) {
+    return ctx.reply("⛔ Siz admin emassiz.");
+  }
 
-bot.command("deletekino", (ctx) => {
+  const result = db.prepare("SELECT COUNT(*) AS total FROM users").get();
+
+  ctx.reply(
+    `📊 Bot statistikasi\n\n👥 Foydalanuvchilar: ${result.total} ta`
+  );
+});
+
+  bot.command("deletekino", (ctx) => {
   if (ctx.from.id != ADMIN_ID) return;
 
   const kod = ctx.message.text.split(" ")[1];
