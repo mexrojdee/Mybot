@@ -57,14 +57,14 @@ bot.command('addkino', (ctx) => {
 
 bot.on('video', (ctx) => {
   if (!kutyapti) return;
-  if (text.startsWith('/')) return;
+  
   vaqtinchaVideo = ctx.message.video.file_id;
   ctx.reply("Endi kino kodini yuboring.");
 });
 
 bot.on('text', (ctx) => {
   const text = ctx.message.text;
-
+  if (text.startsWith('/')) return;
   if (kutyapti && vaqtinchaVideo) {
     kinolar[text] = vaqtinchaVideo;
 
