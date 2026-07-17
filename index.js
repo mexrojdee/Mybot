@@ -78,7 +78,7 @@ bot.command("list", (ctx) => {
 ctx.reply(
   `📊 Bot statistikasi\n\n👥 Foydalanuvchilar: ${Object.keys(users).length} ta`
 );
-
+});
 bot.command("broadcast", (ctx) => {
   if (ctx.from.id !== ADMIN_ID) {
     return ctx.reply("⛔ Siz admin emassiz.");
