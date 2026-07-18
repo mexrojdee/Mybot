@@ -187,16 +187,18 @@ if (waitingCode && tempCode !== "") {
     return ctx.reply(`✅ ${count} ta foydalanuvchiga yuborildi.`);
   }
 
-  if (kinolar[text]) {
-    return ctx.replyWithVideo(kinolar[text].file_id);
-}
-
-for (const code in kinolar) {
 if (kinolar[text]) {
     return ctx.replyWithVideo(kinolar[text].file_id);
 }
 
 for (const code in kinolar) {
+    if (kinolar[code].name.toLowerCase() === text.toLowerCase()) {
+        return ctx.replyWithVideo(kinolar[code].file_id);
+    }
+}
+
+ctx.reply("❌ Bunday kodli kino topilmadi.");
+  
     if (kinolar[code].name.toLowerCase() === text.toLowerCase()) {
         return ctx.replyWithVideo(kinolar[code].file_id);
     }
