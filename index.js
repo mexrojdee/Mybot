@@ -184,3 +184,22 @@ bot.on("text", async (ctx) => {
 
   ctx.reply("❌ Bunday kodli kino topilmadi.");
 });
+
+// Botni ishga tushirish
+bot.launch(() => {
+  console.log("✅ Kino bot ishga tushdi.");
+});
+
+// Xatolarni ushlash
+bot.catch((err, ctx) => {
+  console.error("Bot xatosi:", err);
+});
+
+// To'g'ri to'xtatish
+process.once("SIGINT", () => {
+  bot.stop("SIGINT");
+});
+
+process.once("SIGTERM", () => {
+  bot.stop("SIGTERM");
+});
