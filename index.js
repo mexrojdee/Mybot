@@ -185,7 +185,11 @@ bot.on("text", async (ctx) => {
         caption:
 `🎬 ${kinolar[text].name}
 
-🍿 Yaxshi tomosha!`
+
+🔥 Kino siz uchun tayyor!
+🍿 Maroqli tomosha qiling!
+Yordam va takliflar boʻyicha: Iskndrv1ch_929 
+ga murojat qiling`
       }
     );
 
