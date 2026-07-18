@@ -38,7 +38,7 @@ let users = loadUsers();
 let waitingVideo = false;
 let waitingCode = false;
 let tempVideo = "";
-
+let tempCode = "";
 let broadcastMode = false;
 
 async function checkMember(ctx) {
@@ -150,16 +150,25 @@ bot.on("text", async (ctx) => {
 
   if (text.startsWith("/")) return;
 
-  if (waitingCode) {
-    kinolar[text] = tempVideo;
+  if (waitingCode && tempCode === "") {
+    tempCode = text;
+    return ctx.reply("🎬 Endi kino nomini yuboring.");
+}
+
+if (waitingCode && tempCode !== "") {
+    kinolar[tempCode] = {
+        name: text,
+        file_id: tempVideo
+    };
 
     saveMovies(kinolar);
 
     waitingCode = false;
     tempVideo = "";
+    tempCode = "";
 
     return ctx.reply("✅ Kino muvaffaqiyatli saqlandi.");
-  }
+}
 
   if (broadcastMode) {
     broadcastMode = false;
@@ -179,8 +188,19 @@ bot.on("text", async (ctx) => {
   }
 
   if (kinolar[text]) {
-    return ctx.replyWithVideo(kinolar[text]);
-  }
+    return ctx.replyWithVideo(kinolar[text].file_id);
+}
+
+for (const code in kinolar) {
+if (kinolar[text]) {
+    return ctx.replyWithVideo(kinolar[text].file_id);
+}
+
+for (const code in kinolar) {
+    if (kinolar[code].name.toLowerCase() === text.toLowerCase()) {
+        return ctx.replyWithVideo(kinolar[code].file_id);
+    }
+}
 
   ctx.reply("❌ Bunday kodli kino topilmadi.");
 });
