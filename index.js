@@ -189,11 +189,13 @@ if (waitingCode && tempCode !== "") {
 
   // Kod bo'yicha qidirish
 if (kinolar[text]) {
+if (kinolar[text]) {
+  console.log(kinolar[text]);
+
   return ctx.replyWithVideo(
     kinolar[text].file_id,
     {
-      caption:
-`🎬 ${kinolar[text].name}
+      caption: `🎬 ${kinolar[text].name || "NOM YO'Q"}
 
 🍿 Yaxshi tomosha!`
     }
