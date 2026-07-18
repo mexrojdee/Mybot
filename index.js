@@ -200,7 +200,6 @@ if (kinolar[text]) {
     }
   );
 }
-
 // Nomi bo'yicha qidirish
 for (const code in kinolar) {
   if (
@@ -220,7 +219,8 @@ for (const code in kinolar) {
 }
 
 return ctx.reply("❌ Bunday kodli kino topilmadi.");
-    
+
+  
 
 // Botni ishga tushirish
 bot.launch(() => {
