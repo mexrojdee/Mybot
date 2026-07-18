@@ -199,13 +199,7 @@ for (const code in kinolar) {
 
 ctx.reply("❌ Bunday kodli kino topilmadi.");
   
-    if (kinolar[code].name.toLowerCase() === text.toLowerCase()) {
-        return ctx.replyWithVideo(kinolar[code].file_id);
-    }
-}
-
-  ctx.reply("❌ Bunday kodli kino topilmadi.");
-});
+    
 
 // Botni ishga tushirish
 bot.launch(() => {
