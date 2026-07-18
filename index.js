@@ -151,13 +151,14 @@ bot.on("text", async (ctx) => {
   if (text.startsWith("/")) return;
 
 
-  // Kino qo'shish: kod va nomni saqlash
+  // Kino kodini saqlash
   if (waitingCode && tempCode === "") {
     tempCode = text;
     return ctx.reply("🎬 Endi kino nomini yuboring.");
   }
 
 
+  // Kino nomini saqlash
   if (waitingCode && tempCode !== "") {
 
     kinolar[tempCode] = {
@@ -175,7 +176,7 @@ bot.on("text", async (ctx) => {
   }
 
 
-  // Kino kod orqali chiqarish
+  // Kod orqali kino chiqarish
   if (kinolar[text]) {
 
     return ctx.replyWithVideo(
@@ -195,52 +196,20 @@ bot.on("text", async (ctx) => {
 
 });
 
-  // Kod bo'yicha qidirish
-if (kinolar[text]) {
-  console.log(kinolar[text]);
-
-  return ctx.replyWithVideo(
-    kinolar[text].file_id,
-    {
-      caption: `🎬 ${kinolar[text].name || "NOM YO'Q"}
-
-🍿 Yaxshi tomosha!`
-    }
-  );
-}
-// Nomi bo'yicha qidirish
-for (const code in kinolar) {
-  if (
-    kinolar[code].name &&
-    kinolar[code].name.toLowerCase() === text.toLowerCase()
-  ) {
-    return ctx.replyWithVideo(
-      kinolar[code].file_id,
-      {
-        caption:
-`🎬 ${kinolar[code].name}
-
-🍿 Yaxshi tomosha!`
-      }
-    );
-  }
-}
-
-return ctx.reply("❌ Bunday kodli kino topilmadi.");
-
-  
 
 // Botni ishga tushirish
 bot.launch(() => {
   console.log("✅ Kino bot ishga tushdi.");
 });
 
-// Xatolarni ushlash
+
+// Xatolar
 bot.catch((err, ctx) => {
   console.error("Bot xatosi:", err);
 });
 
-// To'g'ri to'xtatish
+
+// To'xtatish
 process.once("SIGINT", () => {
   bot.stop("SIGINT");
 });
