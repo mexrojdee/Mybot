@@ -1,11 +1,45 @@
-const db = require("./database");
-const { Telegraf } = require('telegraf');
-const fs = require('fs');
+const { Telegraf } = require("telegraf");
+const fs = require("fs");
 
+const BOT_TOKEN = process.env.BOT_TOKEN;
 const CHANNEL = "@kinolar_uz_2";
 const ADMIN_ID = 8715755920;
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+const bot = new Telegraf(BOT_TOKEN);
+
+// Fayllar
+if (!fs.existsSync("kinolar.json")) {
+  fs.writeFileSync("kinolar.json", "{}");
+}
+
+if (!fs.existsSync("users.json")) {
+  fs.writeFileSync("users.json", "{}");
+}
+
+function loadMovies() {
+  return JSON.parse(fs.readFileSync("kinolar.json"));
+}
+
+function saveMovies(data) {
+  fs.writeFileSync("kinolar.json", JSON.stringify(data, null, 2));
+}
+
+function loadUsers() {
+  return JSON.parse(fs.readFileSync("users.json"));
+}
+
+function saveUsers(data) {
+  fs.writeFileSync("users.json", JSON.stringify(data, null, 2));
+}
+
+let kinolar = loadMovies();
+let users = loadUsers();
+
+let waitingVideo = false;
+let waitingCode = false;
+let tempVideo = "";
+
+let broadcastMode = false;
 
 async function checkMember(ctx) {
   try {
@@ -16,119 +50,48 @@ async function checkMember(ctx) {
   }
 }
 
-if (!fs.existsSync("kinolar.json")) {
-  fs.writeFileSync("kinolar.json", "{}");
-}
-
-let kinolar = JSON.parse(fs.readFileSync("kinolar.json"));
-let broadcastMode = false;
-let kutyapti = false;
-let vaqtinchaVideo = null;
-
 bot.start(async (ctx) => {
-  const ok = await checkMember(ctx);
+  const joined = await checkMember(ctx);
 
-  if (!ok) {
-    return ctx.reply("❗ Avval kanalga a'zo bo'ling:\n" + CHANNEL);
+  if (!joined) {
+    return ctx.reply(
+      `❌ Avval kanalga a'zo bo'ling:\n${CHANNEL}`
+    );
   }
-db.addUser(
-  ctx.from.id,
-  ctx.from.first_name || "",
-  ctx.from.username || ""
-);
-  ctx.reply("🎬 Kino botga xush kelibsiz!");
+
+  users[ctx.from.id] = {
+    id: ctx.from.id,
+    name: ctx.from.first_name || "",
+    username: ctx.from.username || ""
+  };
+
+  saveUsers(users);
+
+  ctx.reply(
+`🎬 Kino botga xush kelibsiz!
+
+📥 Kino kodini yuboring.`
+  );
 });
 
 bot.command("addkino", (ctx) => {
-  if (ctx.from.id != ADMIN_ID) return ctx.reply("⛔ Siz admin emassiz.");
+  if (ctx.from.id !== ADMIN_ID)
+    return ctx.reply("⛔ Siz admin emassiz.");
 
-  kutyapti = true;
-  vaqtinchaVideo = null;
+  waitingVideo = true;
+  waitingCode = false;
+  tempVideo = "";
 
   ctx.reply("🎥 Videoni yuboring.");
 });
 
 bot.on("video", (ctx) => {
-  if (!kutyapti) return;
+  if (!waitingVideo) return;
 
-  vaqtinchaVideo = ctx.message.video.file_id;
+  tempVideo = ctx.message.video.file_id;
+
+  waitingVideo = false;
+  waitingCode = true;
+
   ctx.reply("🔢 Endi kino kodini yuboring.");
 });
-
-bot.command("list", (ctx) => {
-
-  if (ctx.from.id != ADMIN_ID) return;
-
-  const list = Object.keys(kinolar);
-
-  if (list.length === 0) {
-    return ctx.reply("📂 Hech qanday kino yo'q.");
-  }
-
-  ctx.reply("🎬 Kinolar:\n\n" + list.join("\n"));
-});
-  
-  bot.command("stats", (ctx) => {
-  if (ctx.from.id !== ADMIN_ID) {
-    return ctx.reply("⛔ Siz admin emassiz.");
-  }
-
-  const users = db.getUsers();
-
-ctx.reply(
-  `📊 Bot statistikasi\n\n👥 Foydalanuvchilar: ${Object.keys(users).length} ta`
-);
-});
-bot.command("broadcast", (ctx) => {
-  if (ctx.from.id !== ADMIN_ID) {
-    return ctx.reply("⛔ Siz admin emassiz.");
-  }
-
-  broadcastMode = true;
-  ctx.reply("📢 Hammaga yuboriladigan xabarni yozing.");
-});
-
-  bot.command("deletekino", (ctx) => {
-  if (ctx.from.id != ADMIN_ID) return;
-
-  const kod = ctx.message.text.split(" ")[1];
-
-  if (!kod) return ctx.reply("Masalan:\n/deletekino 101");
-
-  if (!kinolar[kod]) {
-    return ctx.reply("❌ Bunday kod yo'q.");
-  }
-
-  delete kinolar[kod];
-
-  fs.writeFileSync("kinolar.json", JSON.stringify(kinolar, null, 2));
-
-  ctx.reply("🗑 Kino o'chirildi.");
-});
-
-bot.on("text", (ctx) => {
-  const text = ctx.message.text;
-
-  if (text.startsWith("/")) return;
-
-  if (kutyapti && vaqtinchaVideo) {
-    kinolar[text] = vaqtinchaVideo;
-
-    fs.writeFileSync("kinolar.json", JSON.stringify(kinolar, null, 2));
-
-    kutyapti = false;
-    vaqtinchaVideo = null;
-
-    return ctx.reply("✅ Kino saqlandi.");
-  }
-
-  if (kinolar[text]) {
-    return ctx.replyWithVideo(kinolar[text]);
-  }
-
-  ctx.reply("❌ Bunday kino topilmadi.");
-});
-
-bot.launch();
-
-console.log("✅ Bot ishga tushdi.");
