@@ -198,7 +198,7 @@ for (const code in kinolar) {
 }
 
 ctx.reply("❌ Bunday kodli kino topilmadi.");
-  
+  });
     
 
 // Botni ishga tushirish
