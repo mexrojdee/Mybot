@@ -187,21 +187,38 @@ if (waitingCode && tempCode !== "") {
     return ctx.reply(`✅ ${count} ta foydalanuvchiga yuborildi.`);
   }
 
-  if (kinolar[text]) {
-    return ctx.replyWithVideo(kinolar[text].file_id);
-  }
+  // Kod bo'yicha qidirish
+if (kinolar[text]) {
+  return ctx.replyWithVideo(
+    kinolar[text].file_id,
+    {
+      caption:
+`🎬 ${kinolar[text].name}
 
-  for (const code in kinolar) {
-    if (
-      kinolar[code].name &&
-      kinolar[code].name.toLowerCase() === text.toLowerCase()
-    ) {
-      return ctx.replyWithVideo(kinolar[code].file_id);
+🍿 Yaxshi tomosha!`
     }
-  }
+  );
+}
 
-  return ctx.reply("❌ Bunday kodli kino topilmadi.");
-});
+// Nomi bo'yicha qidirish
+for (const code in kinolar) {
+  if (
+    kinolar[code].name &&
+    kinolar[code].name.toLowerCase() === text.toLowerCase()
+  ) {
+    return ctx.replyWithVideo(
+      kinolar[code].file_id,
+      {
+        caption:
+`🎬 ${kinolar[code].name}
+
+🍿 Yaxshi tomosha!`
+      }
+    );
+  }
+}
+
+return ctx.reply("❌ Bunday kodli kino topilmadi.");
     
 
 // Botni ishga tushirish
