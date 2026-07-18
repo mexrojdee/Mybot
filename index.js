@@ -95,3 +95,92 @@ bot.on("video", (ctx) => {
 
   ctx.reply("🔢 Endi kino kodini yuboring.");
 });
+
+bot.command("list", (ctx) => {
+  if (ctx.from.id !== ADMIN_ID)
+    return ctx.reply("⛔ Siz admin emassiz.");
+
+  const list = Object.keys(kinolar);
+
+  if (list.length === 0)
+    return ctx.reply("📂 Hozircha kinolar yo'q.");
+
+  ctx.reply("🎬 Kinolar:\n\n" + list.join("\n"));
+});
+
+bot.command("stats", (ctx) => {
+  if (ctx.from.id !== ADMIN_ID)
+    return ctx.reply("⛔ Siz admin emassiz.");
+
+  ctx.reply(
+    `📊 Statistika\n\n👥 Foydalanuvchilar: ${Object.keys(users).length} ta\n🎬 Kinolar: ${Object.keys(kinolar).length} ta`
+  );
+});
+
+bot.command("deletekino", (ctx) => {
+  if (ctx.from.id !== ADMIN_ID)
+    return;
+
+  const code = ctx.message.text.split(" ")[1];
+
+  if (!code)
+    return ctx.reply("Masalan:\n/deletekino 101");
+
+  if (!kinolar[code])
+    return ctx.reply("❌ Bunday kino yo'q.");
+
+  delete kinolar[code];
+
+  saveMovies(kinolar);
+
+  ctx.reply("🗑 Kino o'chirildi.");
+});
+
+bot.command("broadcast", (ctx) => {
+  if (ctx.from.id !== ADMIN_ID)
+    return;
+
+  broadcastMode = true;
+
+  ctx.reply("📢 Hammaga yuboriladigan xabarni yozing.");
+});
+
+bot.on("text", async (ctx) => {
+  const text = ctx.message.text;
+
+  if (text.startsWith("/")) return;
+
+  if (waitingCode) {
+    kinolar[text] = tempVideo;
+
+    saveMovies(kinolar);
+
+    waitingCode = false;
+    tempVideo = "";
+
+    return ctx.reply("✅ Kino muvaffaqiyatli saqlandi.");
+  }
+
+  if (broadcastMode) {
+    broadcastMode = false;
+
+    const ids = Object.keys(users);
+
+    let count = 0;
+
+    for (const id of ids) {
+      try {
+        await bot.telegram.sendMessage(id, text);
+        count++;
+      } catch {}
+    }
+
+    return ctx.reply(`✅ ${count} ta foydalanuvchiga yuborildi.`);
+  }
+
+  if (kinolar[text]) {
+    return ctx.replyWithVideo(kinolar[text]);
+  }
+
+  ctx.reply("❌ Bunday kodli kino topilmadi.");
+});
