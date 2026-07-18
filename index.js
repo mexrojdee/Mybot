@@ -189,7 +189,6 @@ if (waitingCode && tempCode !== "") {
 
   // Kod bo'yicha qidirish
 if (kinolar[text]) {
-if (kinolar[text]) {
   console.log(kinolar[text]);
 
   return ctx.replyWithVideo(
