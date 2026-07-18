@@ -150,15 +150,19 @@ bot.on("text", async (ctx) => {
 
   if (text.startsWith("/")) return;
 
+
+  // Kino qo'shish: kod va nomni saqlash
   if (waitingCode && tempCode === "") {
     tempCode = text;
     return ctx.reply("🎬 Endi kino nomini yuboring.");
-}
+  }
 
-if (waitingCode && tempCode !== "") {
+
+  if (waitingCode && tempCode !== "") {
+
     kinolar[tempCode] = {
-        name: text,
-        file_id: tempVideo
+      name: text,
+      file_id: tempVideo
     };
 
     saveMovies(kinolar);
@@ -168,24 +172,28 @@ if (waitingCode && tempCode !== "") {
     tempCode = "";
 
     return ctx.reply("✅ Kino muvaffaqiyatli saqlandi.");
-}
-
-  if (broadcastMode) {
-    broadcastMode = false;
-
-    const ids = Object.keys(users);
-
-    let count = 0;
-
-    for (const id of ids) {
-      try {
-        await bot.telegram.sendMessage(id, text);
-        count++;
-      } catch {}
-    }
-
-    return ctx.reply(`✅ ${count} ta foydalanuvchiga yuborildi.`);
   }
+
+
+  // Kino kod orqali chiqarish
+  if (kinolar[text]) {
+
+    return ctx.replyWithVideo(
+      kinolar[text].file_id,
+      {
+        caption:
+`🎬 ${kinolar[text].name}
+
+🍿 Yaxshi tomosha!`
+      }
+    );
+
+  }
+
+
+  return ctx.reply("❌ Bunday kodli kino topilmadi.");
+
+});
 
   // Kod bo'yicha qidirish
 if (kinolar[text]) {
