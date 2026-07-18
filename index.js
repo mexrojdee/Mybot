@@ -188,7 +188,7 @@ bot.on("text", async (ctx) => {
 
 🔥 Kino siz uchun tayyor!
 🍿 Maroqli tomosha qiling!
-Yordam va takliflar boʻyicha: Iskndrv1ch_929 
+Yordam va takliflar boʻyicha: @Iskndrv1ch_929 
 ga murojat qiling`
       }
     );
